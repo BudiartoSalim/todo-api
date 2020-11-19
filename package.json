@@ -1,0 +1,40 @@
+{
+  "name": "todo-api",
+  "version": "1.0.0",
+  "description": "Simple todo API for nextjs todo app practice",
+  "main": "app.js",
+  "scripts": {
+    "start": "node dist/app.js",
+    "dev": "nodemon src/app.ts",
+    "build": "tsc -p .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BudiartoSalim/todo-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BudiartoSalim/todo-api/issues"
+  },
+  "homepage": "https://github.com/BudiartoSalim/todo-api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "pg": "^8.5.1",
+    "sequelize": "^6.3.5"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.33",
+    "@types/cors": "^2.8.8",
+    "@types/express": "^4.17.9",
+    "@types/node": "^14.14.8",
+    "@types/validator": "^13.1.0",
+    "nodemon": "^2.0.6",
+    "sequelize-cli": "^6.2.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5"
+  }
+}
