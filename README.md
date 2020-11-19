@@ -1,7 +1,8 @@
 # todo-api
-Simple todo API for nextjs todo app practice
+Simple todo API for nextjs todo app practice, created using Typescript and Express, with PostgreSQL Database.
 
-Stack to be used still undecided. Current choices: 
-- Usual NodeJs Express, without Sequelize ORM (practicing implementing good practice in postgres queries)
-- NodeJs Express with Typescript (practice using TS in NodeJs)
-- Golang (practicing Golang)
+Project setup and testing express with TS done, next is to decide on how to do the database.
+
+ORM still undecided, will probably use Sequelize or no ORM at all, or trying TypeORM.
+
+Currently leaning towards no ORM but will probably decide tomorrow.
