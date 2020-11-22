@@ -1,8 +1,9 @@
 # todo-api
-Simple todo API for nextjs todo app practice, created using Typescript and Express, with PostgreSQL Database.
+Simple todo API for nextjs todo app practice, created using Typescript and Express, with PostgreSQL Database. Does NOT use ORM.
 
-Project setup and testing express with TS done, next is to decide on how to do the database.
+REMEMBER TO SETUP ENV VARIABLES AND CREATE THE DB FIRST
 
-ORM still undecided, will probably use Sequelize or no ORM at all, or trying TypeORM.
-
-Currently leaning towards no ORM but will probably decide tomorrow.
+Commands (executed at Root directory):
+- npm run devmigrate = runs table migrations in /src folder (for devs) to DB with name defined in env variable DB_NAME
+- npm run dev = running the api in dev mode
+- npm run migrate = creating tables on the database written in env variable DB_NAME
