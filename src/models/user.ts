@@ -1,5 +1,6 @@
 import pool from '../config/dbconfig';
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
+import jwt, { Secret } from 'jsonwebtoken';
 
 export default class User {
   //post /register
@@ -7,9 +8,9 @@ export default class User {
     const emailRegex: RegExp = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
 
     //input validators
-    if (emailRegex.test(email) === false) { return `Must be in valid email format.`; };
-    if (username.length < 4 || username.length > 50) { return `Username must be between 4 - 50 characters long.` };
-    if (password.length < 4 || password.length > 50) { return `Password must be between 4 - 50 characters long.` };
+    if (emailRegex.test(email) === false) { return { message: `Must be in valid email format.` }; };
+    if (username.length < 4 || username.length > 50) { return { message: `Username must be between 4 - 50 characters long.` } };
+    if (password.length < 4 || password.length > 50) { return { message: `Password must be between 4 - 50 characters long.` } };
 
     const client = await pool.connect();
     try {
@@ -22,12 +23,12 @@ export default class User {
       );
 
       client.release();
-      return `User ${username} is successfully registered!`;
+      return { message: `User ${username} is successfully registered!`, success: true };
     }
     catch (err) {
       client.release();
       if (err.constraint === "Users_email_key") {
-        return 'Email unavailable.';
+        return { message: 'Email unavailable.' };
       }
       console.log(err);
       return err;
@@ -39,17 +40,20 @@ export default class User {
     const client = await pool.connect();
     try {
       const currentUser = await client.query(
-        `SELECT * FROM "Users" WHERE "email" = $1 LIMIT 1`,
+        `SELECT * FROM "Users" WHERE "email" = $1 LIMIT 1;`,
         [email]
-      )
+      );
 
       client.release();
       if (currentUser.rows.length === 1) {
         if (bcrypt.compareSync(password, currentUser.rows[0].password)) {
-          return currentUser;
+          const secretKey: string = process.env.JWT_SECRET_KEY || 'defaultsecret';
+          const payload = { id: currentUser.rows[0].id, username: currentUser.rows[0].username };
+          const token: string = jwt.sign(payload, secretKey, { expiresIn: "1h" });
+          return { message: 'Login successful!', access_token: token };
         }
       }
-      return 'Wrong ID/Password';
+      return { message: 'Wrong ID/Password' };
 
     } catch (err) {
       client.release();
