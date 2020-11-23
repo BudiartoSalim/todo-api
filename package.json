@@ -23,14 +23,17 @@
   },
   "homepage": "https://github.com/BudiartoSalim/todo-api#readme",
   "dependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.5.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.8",
     "@types/express": "^4.17.9",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^14.14.8",
     "@types/validator": "^13.1.0",
     "dotenv": "^8.2.0",
