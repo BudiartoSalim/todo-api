@@ -1,10 +1,17 @@
 import pool from '../config/dbconfig';
 
 interface ITodo {
+  id?: number;
   title: string;
   description: string;
   user_id: number;
   status_id: number;
+}
+
+interface ITodoResponseSchema {
+  success: boolean;
+  data?: ITodo[];
+  error?: any;
 }
 
 export default class Todo implements ITodo {
@@ -16,25 +23,43 @@ export default class Todo implements ITodo {
     public user_id: number
   ) { }
 
-  static async fetchTodo(userId: number) {
+  static async fetchTodo(userId: number): Promise<ITodo[]> {
     const client = await pool.connect();
     try {
       const todoData = await client.query(
-        `SELECT * FROM "Todos"
+        `SELECT "Todos".id, "Todos".title, "Todos".description, "Statuses".status_description FROM "Todos"
         LEFT JOIN "Statuses" 
         ON "Todos".status_id = "Statuses".id
-        WHERE "user_id" = $1;`,
+        WHERE "user_id" = $1
+        ORDER BY "Todos".id;`,
         [userId]
       );
       client.release();
-      return { success: true, data: todoData.rows };
+      return todoData.rows;
     } catch (err) {
       client.release();
       return err;
     }
   }
 
-  static async newTodo(todo: ITodo) {
+  //input validation
+  static todoInputValidator(todo: ITodo): ITodoResponseSchema {
+    if (!todo.title || todo.title.length < 3) {
+      return { success: false, error: 'Title must be between 3 - 255 characters long.' };
+    };
+    if (todo.description && todo.description.length > 255) {
+      return { success: false, error: 'Description too long.' };
+    };
+
+    return { success: true }
+  }
+
+  static async newTodo(todo: ITodo): Promise<ITodoResponseSchema> {
+    const validInputCheck = this.todoInputValidator(todo);
+    if (validInputCheck.success === false) {
+      return validInputCheck;
+    }
+
     const client = await pool.connect();
     try {
       await client.query(
@@ -42,38 +67,53 @@ export default class Todo implements ITodo {
         [todo.title, todo.description, todo.status_id, todo.user_id]
       );
       client.release();
-      return { success: true };
+      const data = await Todo.fetchTodo(todo.user_id);
+      return { success: true, data: data };
 
     } catch (err) {
       client.release();
-      return err;
+      return { success: false, error: err };
     }
   }
 
-  static async updateTodo(todoId: number, todo: ITodo) {
+  static async updateTodo(todoId: number, todo: ITodo): Promise<ITodoResponseSchema> {
+    const validInputCheck = this.todoInputValidator(todo);
+    if (validInputCheck.success === false) {
+      return validInputCheck;
+    }
     if (todo.status_id === 1 || todo.status_id === 2 || todo.status_id === 3) {
       const client = await pool.connect();
       try {
-        client.query(`UPDATE "Todos" 
+        const dbResponse = await client.query(`UPDATE "Todos" 
         SET status_id = $1, title = $2, description = $3
         WHERE id = $4;`, [todo.status_id, todo.title, todo.description, todoId]);
         client.release();
-        return { success: true };
+
+        if (dbResponse.rowCount === 0) {
+          return { success: false, error: 'Todo not found.' };
+        }
+        const data = await Todo.fetchTodo(todo.user_id);
+        return { success: true, data: data };
       } catch (err) {
         client.release();
         return err;
       }
     } else {
-      return { message: "Bad Request." };
+      return { success: false, error: "Bad Request." };
     }
   }
 
-  static async deleteTodo(todoId: number): Promise<ITodo> {
+  static async deleteTodo(todoId: number): Promise<ITodoResponseSchema> {
     const client = await pool.connect();
     try {
       const deletedTodo = await client.query(`DELETE FROM "Todos" WHERE id = $1 RETURNING *;`, [todoId]);
       client.release();
-      return deletedTodo;
+
+      if (!deletedTodo || deletedTodo.rowCount < 1) {
+        return { success: false, error: "Todo not found." };
+      }
+
+      return { success: true, data: deletedTodo.rows };
     } catch (err) {
       client.release();
       return err;
