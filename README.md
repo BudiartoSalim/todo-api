@@ -12,13 +12,13 @@ Commands (executed at Root directory):
 
 # ENDPOINTS
 Endpoints without header
-- POST /login => req.body = {email:string, password:string} | response = {message:string, access_token?:string, errorType?:string}
-- POST /register => req.body = {email:string, username:string, password:string} | response = {message:string, errorType?:string}
+- POST /login => req.body = {email:string, password:string} ; response = {message:string, access_token?:string, errorType?:string}
+- POST /register => req.body = {email:string, username:string, password:string} ; response = {message:string, errorType?:string}
 
 Endpoints requiring header = access_token:string
 - GET /todo => response = todo[] || {message:string, errorType?:string}
-- POST /todo => req.body = {title:string, description:string} | response = todo[] || {message:string, errorType?:string}
-- PUT /todo/:todoId => req.body = {title:string, description:string, status_id:integer} | response = todo[] || {message:string, errorType?:string}
+- POST /todo => req.body = {title:string, description:string} ; response = todo[] || {message:string, errorType?:string}
+- PUT /todo/:todoId => req.body = {title:string, description:string, status_id:integer} ; response = todo[] || {message:string, errorType?:string}
 - DELETE /todo/:todoId => response = {deleted:todo, data: todo[]} || {message:string, errorType?:string}
 
 all todo endpoint will automatically refetch the new todos after the changes.
