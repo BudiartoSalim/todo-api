@@ -27,7 +27,7 @@ export default class Todo implements ITodo {
     const client = await pool.connect();
     try {
       const todoData = await client.query(
-        `SELECT "Todos".id, "Todos".title, "Todos".description, "Statuses".status_description FROM "Todos"
+        `SELECT "Todos".id, "Todos".title, "Todos".description, "Statuses".status_description, "Todos".status_id FROM "Todos"
         LEFT JOIN "Statuses" 
         ON "Todos".status_id = "Statuses".id
         WHERE "user_id" = $1

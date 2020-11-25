@@ -5,10 +5,11 @@ import express = require('express');
 const app: express.Application = express();
 const PORT: number = Number(process.env.PORT) || 4000;
 const router: express.Router = require('./routes/index-router');
-
+const cors = require('cors');
 //middlewares
 import errorHandler from './middlewares/errorhandler';
 
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
